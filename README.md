@@ -6,7 +6,7 @@ Repository containing analysis scripts used for the publication of "Unravaling t
 
 
 - Pre-Processing: refdata-gex-GRCh38-2020-A (10X)
-                  cellranger pipeline (mkfasta)
+                  cellranger pipeline 7.1.0 / (mkfasta)
 
   - qc
  
