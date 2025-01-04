@@ -1,6 +1,6 @@
 # PRIN2022W45BCS
 
-Repository containing analysis scripts used for the publication of "Unravaling the transcriptomic differences between PIRA and no PIRA in a single cell cohort of MS patients".
+Repository containing analysis scripts used for the publication of "Unraveling the transcriptomic differences between PIRA and no PIRA in a single cell cohort of MS patients".
 
 - Sample size
 
