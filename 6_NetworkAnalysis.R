@@ -8,31 +8,35 @@ theme_set(theme_cowplot())
 
 seurat_obj <- SetupForWGCNA(
     seurat,
-    gene_select = "fraction", # the gene selection approach
-    fraction = 0.05, # fraction of cells that a gene needs to be expressed in order to be included
-    wgcna_name = "tutorial" # the name of the hdWGCNA experiment
+    gene_select = "fraction", 
+    fraction = 0.05, 
+    wgcna_name = "MS-PRIN" 
 )
 
 #construct metacells
 
 seurat_obj <- MetacellsByGroups(
     seurat_obj = seurat_obj,
-    group.by = c("ann", "condition"), # specify the columns in seurat_obj@meta.data to group by
-    reduction = 'umap', # select the dimensionality reduction to perform KNN on
-    k = 25, # nearest-neighbors parameter
-    max_shared = 10, # maximum number of shared cells between two metacells
-    ident.group = 'ann' # set the Idents of the metacell seurat object
+    group.by = c("ann", "condition"), 
+    reduction = 'umap', 
+    k = 25, 
+    max_shared = 10, 
+    ident.group = 'ann' 
 )
 
-# normalize metacell expression matrix:
 seurat_obj <- NormalizeMetacells(seurat_obj)
 
 # co-expression analysis
 
+types <- unique(seurat_obj$ann)
+
+# Rimuovi i tipi specifici di cellule
+types <- setdiff(types, c("cDC1", "B naive", "CD4 Naive", "NK Proliferating", "Mono4"))
+
 seurat_obj <- SetDatExpr(
-    seurat_obj,
-    group_name = c("Mono1"),
-    group.by='ann'
+  seurat_obj,
+  group_name = types,
+  group.by='ann'
 )
 
 # Test different soft powers:
@@ -40,12 +44,6 @@ seurat_obj <- TestSoftPowers(
     seurat_obj,
     networkType = 'signed' # you can also use "unsigned" or "signed hybrid"
 )
-
-# plot the results:
-plot_list <- PlotSoftPowers(seurat_obj)
-
-# assemble with patchwork
-wrap_plots(plot_list, ncol=2)
 
 # construct the network
 seurat_obj <- ConstructNetwork(
