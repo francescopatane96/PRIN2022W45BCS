@@ -555,8 +555,95 @@ for (i in seq_along(dot_plots)) {
 ## ------------------------------------------------------------------- ##
 
 ## ------------------------------ Network ----------------------------- ##
+
+# plot the results:
+plot_list <- PlotSoftPowers(seurat_obj)
+
+# assemble with patchwork
+wrap_plots(plot_list, ncol=2)
+
+PlotDendrogram(seurat_obj, main='hdWGCNA Dendrogram - Mono1')
+
+# plot genes ranked by kME for each module
+p <- PlotKMEs(seurat_obj, ncol=5)
+
+# make a featureplot of hMEs for each module
+plot_list <- ModuleFeaturePlot(
+    seurat_obj,
+    features='hMEs', # plot the hMEs
+    order=TRUE # order so the points with highest hMEs are on top
+)
+
+# stitch together with patchwork
+wrap_plots(plot_list, ncol=6)
+
+# make a featureplot of hub scores for each module
+plot_list <- ModuleFeaturePlot(
+    seurat_obj,
+    features='scores', # plot the hub gene scores
+    order='shuffle', # order so cells are shuffled
+    ucell = TRUE # depending on Seurat vs UCell for gene scoring
+)
+
+# stitch together with patchwork
+wrap_plots(plot_list, ncol=6)
+
+seurat_obj$cluster <- do.call(rbind, strsplit(as.character(seurat_obj$ann), ' '))[,1]
+
+ModuleRadarPlot(
+    seurat_obj,
+    group.by = 'cluster',
+    barcodes = seurat_obj@meta.data %>% subset(ann == 'Mono') %>% rownames(),
+    axis.label.size=4,
+    grid.label.size=4
+)
+
+# plot module correlagram
+ModuleCorrelogram(seurat_obj)
+
+p <- DotPlot(seurat_obj, features=mods, group.by = 'ann', split.by = "condition")
+
+## 1. Differential module eigengene (DME) analysis
+
+PlotDMEsLollipop(
+    seurat_obj, 
+    DMEs,
+    wgcna_name='MS', 
+    pvalue = "p_val_adj"
+)
+
+#one-versus-all DME analysis
+p <- PlotDMEsVolcano(
+    seurat_obj,
+    DMEs_all,
+    wgcna_name = 'MS',
+    plot_labels=FALSE,
+    show_cutoff=FALSE
+)
+
+# facet wrap by each cell type
+p + facet_wrap(~group, ncol=3)
+
+## 2.  Module Trait Correlation
+
+PlotModuleTraitCorrelation(
+    seurat_obj,
+    label = 'fdr',
+    label_symbol = 'stars',
+    text_size = 2,
+    text_digits = 2,
+    text_color = 'white',
+    high_color = 'red',
+    mid_color = 'black',
+    low_color = 'blue',
+    plot_max = 0.2,
+    combine=TRUE
+)
+
+## 3. Enrichment
+
 ## ------------------------------------------------------------------ ##
 
-## -------------------------------- cell-cell comm. -----------------------##
+## -------------------------------- cell-cell comm. ------------------##
 
-## ----------------------------------------------------------------- ##
+## ------------------------------------------------------------------ ##
