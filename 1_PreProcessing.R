@@ -78,6 +78,7 @@ seurat <- IntegrateLayers(
   verbose = FALSE
 )
 seurat <- JoinLayers(seurat)
+seurat <- RunUMAP(seurat, dims=1:15, reduction = "harmony", reduction.name = "umap.harmony")
 
 cc_file <- getURL("https://raw.githubusercontent.com/hbc/tinyatlas/master/cell_cycle/Homo_sapiens.csv") 
 cell_cycle_genes <- read.csv(text = cc_file)
