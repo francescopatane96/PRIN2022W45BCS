@@ -11,8 +11,6 @@ library(dplyr)
 set.seed(100)
 # -------------------
 
-seurat <- JoinLayers(seurat)
-
 seurat$log10GenesPerUMI <- log10(seurat$nFeature_RNA)/log10(seurat$nCount_RNA)
 seurat[["percent.RB"]] <- PercentageFeatureSet(seurat,pattern="^RP[LS]") 
 seurat[["percent.MT"]] <- PercentageFeatureSet(seurat, pattern = "^MT-")
@@ -66,10 +64,11 @@ gc()
 seurat <- subset(seurat, subset=dblFinder=="singlet")
 seurat <- NormalizeData(seurat,
                         normalization.method = "LogNormalize")
+seurat[["RNA"]] <- split(seurat[["RNA"]], f = seurat$sample)
+
 seurat <- FindVariableFeatures(seurat, selection.method = "vst", nfeatures = 3000)
 seurat <- ScaleData(seurat, vars.to.regress = "percent.MT")
 seurat <- RunPCA(seurat)
-seurat[["RNA"]] <- split(seurat[["RNA"]], f = seurat$sample)
 
 seurat <- IntegrateLayers(
   object = seurat,
