@@ -64,7 +64,7 @@ gc()
 seurat <- subset(seurat, subset=dblFinder=="singlet")
 seurat <- NormalizeData(seurat,
                         normalization.method = "LogNormalize")
-seurat[["RNA"]] <- split(seurat[["RNA"]], f = seurat$sample)
+seurat[["RNA"]] <- split(seurat[["RNA"]], f = seurat$batch)
 
 seurat <- FindVariableFeatures(seurat, selection.method = "vst", nfeatures = 3000)
 seurat <- ScaleData(seurat, vars.to.regress = "percent.MT")
